@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+const addr = ":4000"
+
 func home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -12,29 +14,20 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hello := "Hello World!"
-	_, err := w.Write([]byte(hello))
-	if err != nil {
-		log.Print(err)
-	}
+	_, _ = w.Write([]byte(hello))
 }
 
 func snippetView(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Display a specific snippet..."))
-	if err != nil {
-		log.Print(err)
-	}
+	_, _ = w.Write([]byte("Display a specific snippet..."))
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	_, err := w.Write([]byte("create a new snippet..."))
-	if err != nil {
-		log.Print(err)
-	}
+	_, _ = w.Write([]byte("create a new snippet..."))
 }
 
 func main() {
@@ -44,6 +37,6 @@ func main() {
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
 	log.Print("running on port 4000")
-	err := http.ListenAndServe(":4000", mux)
+	err := http.ListenAndServe(addr, mux)
 	log.Fatal(err)
 }
