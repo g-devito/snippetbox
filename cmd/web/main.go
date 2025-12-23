@@ -4,9 +4,13 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
+	logInfo := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	logError := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
 
@@ -19,7 +23,7 @@ func main() {
 	mux.HandleFunc("/snippet/view", snippetView)
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
-	log.Printf("running on port %v", *addr)
+	logInfo.Printf("running on port %s", *addr)
 	err := http.ListenAndServe(*addr, mux)
-	log.Fatal(err)
+	logError.Fatal(err)
 }
