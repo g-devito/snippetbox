@@ -1,24 +1,25 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
-const addr = ":4000"
-
 func main() {
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	flag.Parse()
+
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(http.Dir("./ui/static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/snippet/view", snippetView)
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
-
-	log.Print("running on port 4000")
-	err := http.ListenAndServe(addr, mux)
+	log.Printf("running on port %v", *addr)
+	err := http.ListenAndServe(*addr, mux)
 	log.Fatal(err)
 }
